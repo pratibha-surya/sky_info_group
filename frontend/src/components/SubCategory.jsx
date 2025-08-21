@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api/v1',
+  baseURL: 'https://sky-info-group.onrender.com/api/v1',
 });
 
 const SubcategoryForm = () => {

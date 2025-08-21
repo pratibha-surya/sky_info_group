@@ -18,14 +18,14 @@ const app = express();
 app.use(express.json());
 
 const allowedOrigins = [
-  'https://sky-info-group.onrender.com', // fixed the double https://
+  'https://sky-info-group.onrender.com', 
   'http://localhost:5173',
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow non-browser tools like curl
+      if (!origin) return callback(null, true); 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       } else {
