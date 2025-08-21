@@ -1,9 +1,13 @@
-
-const Header = () => {
+const Header = ({ toggleSidebar }) => {
   return (
     <header className="bg-white shadow p-4 flex items-center justify-between">
-      <h1 className="text-xl font-semibold text-gray-800">sky info  group</h1>
-    
+      <button
+        className="text-2xl text-gray-600 md:hidden"
+        onClick={toggleSidebar}
+      >
+        ☰
+      </button>
+      <h1 className="text-xl font-semibold text-gray-800 hidden md:block">Dashboard</h1>
     </header>
   );
 };
