@@ -1,22 +1,20 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import CategoryForm from './components/Category';
-import SubcategoryForm from './components/SubCategory';
-import ProductForm from './components/Product';
-       
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import CategoryForm from './pages/Category';
+import SubcategoryForm from './pages/SubCategory';
+import ProductForm from './pages/Product';
+import Layout from '../components/Layout';
 
 function App() {
   return (
     <Router>
-      <div className="p-4 bg-gray-100 min-h-screen">
-       
-
+      <Layout>
         <Routes>
-          <Route path="/" element={<CategoryForm />} />
-          <Route path="/subcategories" element={<SubcategoryForm />} />
-          <Route path="/products" element={<ProductForm />} />
-          <Route path="*" element={<div>Page Not Found</div>} />
+          <Route path="/category" element={<CategoryForm />} />
+          <Route path="/subcategory" element={<SubcategoryForm />} />
+          <Route path="/product" element={<ProductForm />} />
         </Routes>
-      </div>
+      </Layout>
     </Router>
   );
 }
