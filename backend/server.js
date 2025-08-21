@@ -17,9 +17,24 @@ const app = express();
 
 app.use(express.json());
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-}));
+const allowedOrigins = [
+  'https://sky-info-group.onrender.com', // fixed the double https://
+  'http://localhost:5173',
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow non-browser tools like curl
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
+);
 
 app.use('/api/v1/', categoryRoute);
 app.use('/api/v1/', subcategoryRoute);
