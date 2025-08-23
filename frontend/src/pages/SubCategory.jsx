@@ -9,11 +9,14 @@ const API = axios.create({
 
 const SubcategoryForm = () => {
   const navigate = useNavigate();
+
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
-  const [subcategories, setSubcategories] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [editingId, setEditingId] = useState(null);
 
+  
   const fetchCategories = async () => {
     try {
       const res = await API.get('/get');
@@ -23,6 +26,7 @@ const SubcategoryForm = () => {
     }
   };
 
+  
   const fetchSubcategories = async () => {
     try {
       const res = await API.get('/getsubcategory');
@@ -32,24 +36,55 @@ const SubcategoryForm = () => {
     }
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!name.trim() || !category) {
       toast.error('Please fill in all fields');
       return;
     }
 
     try {
-      await API.post('/subcategories', { name, category });
-      toast.success('Subcategory added successfully!');
+      if (editingId) {
+        await API.put(`/subcategory/${editingId}`, { name, category });
+        toast.success('Subcategory updated successfully!');
+      } else {
+        await API.post('/subcategories', { name, category });
+        toast.success('Subcategory created successfully!');
+      }
+
       setName('');
       setCategory('');
+      setEditingId(null);
       fetchSubcategories();
-      navigate('/products');
+      navigate('/products'); 
     } catch (error) {
-      toast.error('Failed to add subcategory');
+      toast.error('Something went wrong!');
     }
   };
+
+  
+  const handleEdit = (subcategory) => {
+    setName(subcategory.name);
+    setCategory(subcategory.category?._id || '');
+    setEditingId(subcategory._id);
+  };
+
+  
+  const handleDelete = async (id) => {
+    const confirm = window.confirm('Are you sure you want to delete this subcategory?');
+    if (!confirm) return;
+
+    try {
+      await API.delete(`/subcategory/${id}`);
+      toast.success('Subcategory deleted!');
+      fetchSubcategories();
+    } catch (error) {
+      toast.error('Delete failed');
+    }
+  };
+
 
   useEffect(() => {
     fetchCategories();
@@ -85,9 +120,10 @@ const SubcategoryForm = () => {
 
       <div className="w-full max-w-md p-6 bg-white shadow-xl rounded-xl border border-indigo-200">
         <h2 className="text-2xl font-bold mb-6 text-center text-indigo-700">
-          Create Subcategory
+          {editingId ? 'Update Subcategory' : 'Create Subcategory'}
         </h2>
 
+       
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-6">
           <input
             type="text"
@@ -114,19 +150,36 @@ const SubcategoryForm = () => {
             type="submit"
             className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300"
           >
-            Add
+            {editingId ? 'Update' : 'Add'}
           </button>
         </form>
 
+     
         <div className="max-h-64 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-indigo-300 pr-1">
           {subcategories.map((s) => (
             <div
               key={s._id}
-              className="px-4 py-2 bg-gray-100 rounded-md shadow-sm text-gray-700"
+              className="px-4 py-2 bg-gray-100 rounded-md shadow-sm text-gray-700 flex justify-between items-center"
             >
-              <div className="font-semibold">{s.name}</div>
-              <div className="text-sm text-gray-500">
-                Category: {s.category?.name || 'N/A'}
+              <div>
+                <div className="font-semibold">{s.name}</div>
+                <div className="text-sm text-gray-500">
+                  Category: {s.category?.name || 'N/A'}
+                </div>
+              </div>
+              <div className="flex gap-3 text-sm">
+                <button
+                  onClick={() => handleEdit(s)}
+                  className="text-indigo-600 hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(s._id)}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
